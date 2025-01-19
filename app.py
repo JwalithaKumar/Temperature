@@ -5,7 +5,7 @@ from tensorflow.keras.models import load_model
 # Load the trained model
 @st.cache_resource
 def load_lstm_model():
-    model = load_model("temperature_predictor.h5")
+    model = load_model("temp.h5")
     return model
 
 model = load_lstm_model()
