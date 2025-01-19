@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 from tensorflow.keras.models import load_model
+from sklearn.preprocessing import MinMaxScaler
 
 # Load the trained model
 @st.cache_resource
@@ -9,6 +10,9 @@ def load_lstm_model():
     return model
 
 model = load_lstm_model()
+
+# Initialize the scaler (same feature range as used in training)
+sc = MinMaxScaler(feature_range=(0, 1))
 
 # Page Title
 st.title("Temperature Prediction App")
@@ -20,14 +24,19 @@ for i in range(1, 6):
     value = st.number_input(f"Temperature {i}", value=0.0, step=0.1, format="%.1f")
     input_values.append(value)
 
+# Predict button
 if st.button("Predict Next Day's Temperature"):
     # Reshape input for the LSTM model
     input_array = np.array(input_values).reshape(1, 5, 1)  # Shape: (1, timesteps, features)
 
+    # Scale the input values using the same scaler as in training
+    input_array_scaled = sc.fit_transform(np.array(input_values).reshape(-1, 1)).reshape(1, 5, 1)
+
     # Make prediction
-    prediction = model.predict(input_array)
+    prediction_scaled = model.predict(input_array_scaled)
 
-    # Extract the scalar value and format it
-    predicted_temperature = float(prediction[0][0])  # Ensure it's a float
+    # Inverse transform the prediction to get the original scale
+    predicted_temperature = sc.inverse_transform(prediction_scaled)[0][0]  # Reshape to match scaler
+
+    # Display the result
     st.success(f"The predicted temperature for the next day is: {predicted_temperature:.2f}°C")
-
