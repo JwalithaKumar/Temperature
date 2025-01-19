@@ -20,7 +20,6 @@ for i in range(1, 6):
     value = st.number_input(f"Temperature {i}", value=0.0, step=0.1, format="%.1f")
     input_values.append(value)
 
-# Predict button
 if st.button("Predict Next Day's Temperature"):
     # Reshape input for the LSTM model
     input_array = np.array(input_values).reshape(1, 5, 1)  # Shape: (1, timesteps, features)
@@ -28,5 +27,7 @@ if st.button("Predict Next Day's Temperature"):
     # Make prediction
     prediction = model.predict(input_array)
 
-    # Display the result
-    st.success(f"The predicted temperature for the next day is: {prediction[0][0]:.2f}°C")
+    # Extract the scalar value and format it
+    predicted_temperature = float(prediction[0][0])  # Ensure it's a float
+    st.success(f"The predicted temperature for the next day is: {predicted_temperature:.2f}°C")
+
