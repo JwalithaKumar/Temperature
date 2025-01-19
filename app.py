@@ -36,7 +36,8 @@ if st.button("Predict Next Day's Temperature"):
     prediction_scaled = model.predict(input_array_scaled)
 
     # Inverse transform the prediction to get the original scale
-    predicted_temperature = sc.inverse_transform(prediction_scaled)[0][0]  # Reshape to match scaler
+    predicted_temperature = sc.inverse_transform(prediction_scaled.reshape(-1, 1))[0][0]
+ # Reshape to match scaler
 
     # Display the result
     st.success(f"The predicted temperature for the next day is: {predicted_temperature:.2f}°C")
